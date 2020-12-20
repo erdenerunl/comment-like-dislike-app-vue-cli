@@ -9,7 +9,7 @@
             {{ comment.desc }}
           </p>
           <div class="container text-right">
-              <button type="button" class="btn btn-success btn-sm mr-1" @click="isLike(comment.id)">Like {{ likeCounter }} </button>
+              <button type="button" class="btn btn-success btn-sm mr-1" @click="isLike(comment)">Like {{ comment.like }} </button>
               <button type="button" class="btn btn-danger btn-sm">Dislike</button>
           </div>
         </div>
@@ -24,20 +24,20 @@ export default {
     props : ["commentList"],
     data(){
         return {
-            likeCounter : 0,
-            dislikeCounter : 0
+            updateId : null,
         }
     },
     methods : {
-        isLike(id){
-            axios.patch(`http://localhost:3000/comments/${id}`).then((response) => {
-                response.data.like++
-                
-                console.log(response.data.like)
-            }).catch((e)=> {
-                alert(e)
-            })
-            this.likeCounter++
+        isLike(comment){
+            this.updateId = comment.id
+            console.log(this.updateId, 'this.updateId')
+            axios.patch(`http://localhost:3000/comments/${this.updateId}`, this.commentData.like)
+            .then((response) =>{
+                const matchedComment = this.commentList.findIndex((b) => b.id === this.updateId)
+                this.commentList[matchedComment].like++
+                console.log(this.commentList[matchedComment].like, 'this.commentList[matchedComment].like')
+                this.updateId = null
+            }).catch(e => alert(e))
         }
     }
 }
