@@ -9,8 +9,20 @@
             {{ comment.desc }}
           </p>
           <div class="container text-right">
-              <button type="button" class="btn btn-success btn-sm mr-1" @click="isLike(comment)">Like {{ comment.like }} </button>
-              <button type="button" class="btn btn-danger btn-sm">Dislike</button>
+            <button
+              type="button"
+              class="btn btn-success btn-sm mr-1"
+              @click="isLike(comment)"
+            >
+              Like {{ comment.like }}
+            </button>
+            <button
+              @click="disLike(comment)"
+              type="button"
+              class="btn btn-danger btn-sm"
+            >
+              Dislike {{ comment.dislike }}
+            </button>
           </div>
         </div>
       </div>
@@ -19,26 +31,36 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
 export default {
-    props : ["commentList"],
-    data(){
-        return {
-            updateId : null,
-        }
+  props: ["commentList"],
+  methods: {
+    isLike(comment) {
+      
+      const matchedComment = this.commentList.findIndex(
+        (b) => b.id === comment.id
+      );
+      this.commentList[matchedComment].like++;
+      axios
+        .patch(
+          `http://localhost:3000/comments/${comment.id}`,
+          this.commentList[matchedComment]
+        )
+        .catch((e) => alert(e));
     },
-    methods : {
-        isLike(comment){
-            this.updateId = comment.id
-            console.log(this.updateId, 'this.updateId')
-            axios.patch(`http://localhost:3000/comments/${this.updateId}`, this.commentData.like)
-            .then((response) =>{
-                const matchedComment = this.commentList.findIndex((b) => b.id === this.updateId)
-                this.commentList[matchedComment].like++
-                console.log(this.commentList[matchedComment].like, 'this.commentList[matchedComment].like')
-                this.updateId = null
-            }).catch(e => alert(e))
-        }
-    }
-}
+    disLike(comment) {
+      
+      const matchedComment = this.commentList.findIndex(
+        (b) => b.id === comment.id
+      );
+      this.commentList[matchedComment].dislike++
+      axios
+        .patch(
+          `http://localhost:3000/comments/${comment.id}`,
+          this.commentList[matchedComment]
+        )
+        .catch((e) => alert(e));
+    },
+  },
+};
 </script>
